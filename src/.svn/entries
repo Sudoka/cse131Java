@@ -1,0 +1,122 @@
+10
+
+dir
+51
+https://shell.cec.wustl.edu:8443/cse131_sp12/svn/Thomas-407928/src
+https://shell.cec.wustl.edu:8443/cse131_sp12/svn/Thomas-407928
+
+
+
+2012-04-23T18:08:55.663318Z
+51
+philipithomas@ACCOUNTS.AD.WUSTL.EDU
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+fa4d0db7-0804-4e2f-9f61-b63e2575de39
+
+bscholes
+dir
+
+business
+dir
+
+conway
+dir
+
+cover-page.txt
+file
+
+
+
+
+2012-04-23T18:02:40.000000Z
+22c94bba24be803745c2c3f1317c07d2
+2012-04-23T18:08:55.663318Z
+51
+philipithomas@ACCOUNTS.AD.WUSTL.EDU
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+963
+
+game
+dir
+
+gametests
+dir
+
+julia
+dir
+
+lab0
+dir
+
+lab1
+dir
+
+lab2
+dir
+
+lab3
+dir
+
+lab4
+dir
+
+lab5
+dir
+
+lab6
+dir
+
+lab8
+dir
+
+lab9
+dir
+
+lecture
+dir
+
+matrix
+dir
+
+matrixGauss
+dir
+
+nip
+dir
+
+practice
+dir
+

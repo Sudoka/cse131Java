@@ -1,0 +1,252 @@
+package game;
+
+import game.pubsub.*;
+import java.util.LinkedList;
+import lab4.Point;
+import lab4.Vector;
+
+/**
+ * The Piece class is used to represent various components in the game,
+ * including bricks, balls, the paddle and the boundaries of the game. It
+ * provides methods to move a piece and if this piece interacts with another. It
+ * also supports adjustment to its size and to its "life status".
+ * 
+ * @author Jon Turner, adapted from original by Ron Cytron
+ */
+public class Piece extends BasePublisher<PieceEvent> {
+
+	protected BoundingBox bb;
+	private double status; // in [0,1], 0 when dead, 1 when fully alive
+	private Vector direction; // direction in which piece most recently moved
+
+	public Piece(BoundingBox bb) {
+		super();
+		this.bb = bb;
+		status = 1;
+		direction = new Vector(0, 0);
+	}
+
+	/**
+	 * @return the width of the piece
+	 */
+	public int getWidth() {
+		return bb.getWidth();
+	}
+
+	/**
+	 * @return the height of the piece
+	 */
+	public int getHeight() {
+		return bb.getHeight();
+	}
+
+	/**
+	 * @return the center of the piece
+	 */
+	public Point getCenter() {
+		return bb.getCenter();
+	}
+
+	/**
+	 * @return the bounding box for the piece
+	 */
+	public BoundingBox getBB() {
+		return this.bb;
+	}
+
+	/**
+	 * Set the bounding box for the piece.
+	 * 
+	 * @param bb
+	 *            is the new bounding box
+	 */
+	public void setBB(BoundingBox bb) {
+		this.bb = bb;
+	}
+
+	/**
+	 * @return the "life status" of the piece
+	 */
+	public double getStatus() {
+		return status;
+	}
+
+	/**
+	 * @return true if the piece is dead
+	 */
+	public boolean isDead() {
+		return status == 0;
+	}
+
+	/**
+	 * @return the direction in which the piece last moved; more precisely, the
+	 *         vector difference between the last two center points.
+	 */
+	public Vector getDirection() {
+		return direction;
+	}
+
+	/**
+	 * The intersects method is used to determine when two pieces have come into
+	 * contact with one another. It does this by first comparing the piece's
+	 * bounding boxes (which is fast) and then for pieces whose bounding boxes
+	 * intersect, it compares the sets of points with integer coordinates that
+	 * are inside the pieces. This part, it can be slow if both pieces are
+	 * really large.
+	 * 
+	 * @param other
+	 *            the second piece which is checked against this for
+	 *            intersection
+	 * @return true if the two pieces intersect, else false.
+	 */
+	public boolean intersects(Piece other) {
+		// If boxes don't intersect, neither can the Pieces
+		if (!this.bb.intersects(other.bb))
+			return false;
+
+		Vector thisWidth = new Vector(bb.width, 0);
+		Vector thisHeight = new Vector(0, bb.height);
+		Vector otherWidth = new Vector(other.bb.width, 0);
+		Vector otherHeight = new Vector(0, other.bb.height);
+		Point ul = bb.getUL();
+		Point ur = bb.getUL().plus(thisWidth);
+		Point ll = bb.getUL().plus(thisWidth).plus(thisHeight);
+		Point lr = bb.getUL().plus(thisHeight);
+		Point otherul = other.bb.getUL();
+		Point otherur = other.bb.getUL().plus(otherWidth);
+		Point otherll = other.bb.getUL().plus(otherWidth).plus(otherHeight);
+		Point otherlr = other.bb.getUL().plus(otherHeight);
+		Segment[] mySegments = {new Segment(ul, ur), new Segment(ur, lr), new Segment(lr, ll), new Segment(ll, ul) }; 
+		Segment[] otherSegments = {new Segment(otherul, otherur), new Segment(otherur, otherlr), new Segment(otherlr, otherll), new Segment(otherll, otherul) }; 
+
+		Piece bigger = this;
+		Piece smaller = other;
+		if (bigger.bb.area() < smaller.bb.area()) {
+			bigger = other;
+			smaller = this;
+		}
+
+		// Iterating through smaller set of points can be faster.
+		for (Point p : smaller.points()) {
+			if (bigger.contains(p))
+				return true;
+		}
+		for( Segment s : mySegments){
+			for(Segment t : otherSegments){
+				if(s.instersects(t)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * A subclass can override this method to produce more precise intersection
+	 * calculation.
+	 * 
+	 * @param p
+	 *            is point to be tested for containment
+	 * @return true if p is a point inside the piece
+	 */
+	public boolean contains(Point p) {
+		return bb.contains(p);
+	}
+
+	/**
+	 * Returns a list of points that are inside the piece. It does this by
+	 * checking which points in the bounding box are actually contained in the
+	 * piece.
+	 * 
+	 * @return
+	 */
+	public Iterable<Point> points() {
+		LinkedList<Point> list = new LinkedList<Point>();
+		for (Point p : bb.points()) {
+			if (this.contains(p))
+				list.add(p);
+		}
+		return list;
+	}
+
+	/**
+	 * Causes the piece to die.
+	 */
+	public void die() {
+		dieSome(0);
+	}
+
+	/**
+	 * Reduces the life status of the piece by a specified factor and informs
+	 * all game components that are subscribers of this piece.
+	 * 
+	 * @param factor
+	 *            that is multiplied by the life status; ignored if less than 0
+	 *            or greater than 1
+	 */
+	public void dieSome(double factor) {
+		if (factor < 0 || factor > 1)
+			return; // ignore bad argument
+		status *= factor;
+		if (status < .1)
+			status = 0;
+		this.notifySubscribers(new PieceEvent(this));
+	}
+
+	/**
+	 * Changes the location of the point and informs subscribers of the change
+	 * in location.
+	 * 
+	 * @param p
+	 *            new location for the center of the piece
+	 */
+	public void setCenter(Point p) {
+		if (!p.equals(bb.getCenter())) {
+			direction = new Vector(p.getX() - getCenter().getX(), p.getY()
+					- getCenter().getY());
+			setBB(new BoundingBox(p, getWidth(), getHeight()));
+			this.notifySubscribers(new PieceEvent(this));
+		}
+	}
+
+	/**
+	 * Informs subscribers that the piece has shrunk. Subclasses are expected to
+	 * provide their own shrink class to effect the change in size, then invoke
+	 * the method in the superclass.
+	 * 
+	 * @param factor
+	 *            by which the size is changed
+	 */
+	public void shrink(double factor) {
+		this.notifySubscribers(new PieceEvent(this));
+		System.out.println("Getting here");
+
+	}
+
+	private class Segment {
+		double xMax;
+		double yMax;
+		double xMin;
+		double yMin;
+		private boolean isHoriz;
+
+		public Segment(Point start, Point end) {
+			xMax = start.getX() >= end.getX() ? start.getX() : end.getX();
+			xMin = start.getX() <= end.getX() ? start.getX() : end.getX();
+			yMax = start.getY() >= end.getY() ? start.getY() : end.getY();
+			yMax = start.getY() <= end.getY() ? start.getY() : end.getY();
+			isHoriz = start.getY() == end.getY();
+		}
+
+		public boolean instersects( Segment other ){
+			if(isHoriz == other.isHoriz){
+				return false;
+			}
+			if(isHoriz){
+				return other.instersects(this);
+			}
+			return ( ( other.yMax <= yMax && other.yMin >= yMin ) && 
+					( xMax <= other.xMax && xMin >= other.xMin ) );
+		}
+	}
+}

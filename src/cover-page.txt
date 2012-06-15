@@ -1,0 +1,24 @@
+Cover page for Lab 10.
+
+1) Names and 3 digit IDs of students who worked on this lab:
+Philip Thomas 928
+
+2) Describe your 3 (or more) special brick types:
+Random Distribution
+BrickA YELLOW - slows down 
+BrickB GREEN- Speeds up ball
+BrickC RED - Makes ball go on a more vertical path and more quickly - i.e. it flies towards death path faster!
+BrickD BLACK - Shrinks when hit
+
+3) Describe your 2 (or more) special ball types:
+Random which one is assigned
+ballA CYAN - Small and fast 
+ballB Orange - Big, Slow, and interacts differently with PaddleCool: Randomly chooses between a normal bounce or a forced bounce to the right
+(Paddlecool always bounces to right, so with BallB there is a 1/4 chance that it will go to the left!) 
+
+
+4) Describe any other interesting features in your game:
+PaddleCool always bounces to the right, unless it's interacting with ballB in which case it might randomly go to the left
+
+5) Do you plan to enter the programming contest?
+Nope

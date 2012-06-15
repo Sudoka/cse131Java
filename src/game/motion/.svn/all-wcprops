@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/cse131_sp12/svn/Thomas-407928/!svn/ver/51/src/game/motion
+END
+Trajectory.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/cse131_sp12/svn/Thomas-407928/!svn/ver/48/src/game/motion/Trajectory.java
+END
+ConstantAcceleration.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/cse131_sp12/svn/Thomas-407928/!svn/ver/48/src/game/motion/ConstantAcceleration.java
+END
+Stationary.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/cse131_sp12/svn/Thomas-407928/!svn/ver/48/src/game/motion/Stationary.java
+END
+PieceMover.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/cse131_sp12/svn/Thomas-407928/!svn/ver/51/src/game/motion/PieceMover.java
+END
+ConstantVelocity.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/cse131_sp12/svn/Thomas-407928/!svn/ver/48/src/game/motion/ConstantVelocity.java
+END
